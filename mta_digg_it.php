@@ -10,7 +10,7 @@
 // file name. Uncomment and edit this line to override:
 $plugin['name'] = 'mta_digg_it';
 
-$plugin['version'] = '0.1';
+$plugin['version'] = '0.2';
 $plugin['author'] = 'Morgan Aldridge';
 $plugin['author_uri'] = 'http://www.makkintosshu.com/';
 $plugin['description'] = 'Implements embedding of Digg.com\'s new smart "Digg This" button with Submit capability.';
@@ -72,6 +72,12 @@ p. @<txp:mta_digg_it skin="compact" bgcolor="#000"/>@
 
 p. @<txp:mta_digg_it bodytext="<txp:excerpt />" />@
 
+h3. Change Log
+
+v0.2 Correctly escapes apostrophes, quotes, etc. found in @title@ and/or @bodytext@ attributes. Also now resets all variables to better support multiple "Digg This" buttons per page when certain attributes are used.
+
+v0.1 Initial release.
+
 
 # --- END PLUGIN HELP ---
 <?php
@@ -96,25 +102,17 @@ function mta_digg_it($atts)
 	
 	$digg_js .= '<script type="text/javascript">'."\n";
 	$digg_js .= 'digg_url = \''.$digg_url."';\n";
-    if ( $title != '' )
-    {
-    	$digg_js .= 'digg_title = \''.htmlspecialchars($title)."';\n";
-    }
-    if ( $bodytext != '' )
-    {
-    	$digg_js .= 'digg_bodytext = \''.htmlspecialchars($bodytext)."';\n";
-    }
-    if ( $digg_topic != '' )
-    {
-    	$digg_js .= 'digg_topic = \''.$digg_topic."';\n";
-    }
-    if ( $bgcolor != '' )
-    {
-    	$digg_js .= 'digg_bgcolor = \''.$bgcolor."';\n";
-    }
+	$digg_js .= 'digg_title = \''.addslashes(htmlspecialchars($title))."';\n";
+	$digg_js .= 'digg_bodytext = \''.addslashes(htmlspecialchars($bodytext))."';\n";
+	$digg_js .= 'digg_topic = \''.$digg_topic."';\n";
+	$digg_js .= 'digg_bgcolor = \''.$bgcolor."';\n";
     if ( $compact == 1 )
     {
     	$digg_js .= 'digg_skin = \'compact\';'."\n";
+    }
+    else
+    {
+    	$digg_js .= 'digg_skin = \'\';'."\n";
     }
     $digg_js .= '</script>'."\n";
 	
